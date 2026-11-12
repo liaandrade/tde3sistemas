@@ -1,6 +1,3 @@
-#!/usr/bin/env bash
-# Demonstra failover automático: derruba app2, mostra que o tráfego continua, e a recupera.
-# Uso: ./scripts/simulate_failure.sh   (com o ambiente já rodando)
 set -u
 LB=${LB:-http://localhost:8080}
 

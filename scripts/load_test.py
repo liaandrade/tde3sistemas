@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-"""
-Gerador de carga simples (somente biblioteca padrão).
-Mostra qual instância respondeu cada requisição e um resumo no final.
-
-Exemplos:
-  python scripts/load_test.py -n 30                       # 30 reqs, sequencial
-  python scripts/load_test.py -n 200 -c 1 -d 0.1          # ~10 req/s (p/ ver failover ao vivo)
-  python scripts/load_test.py -n 40 -c 20 -p "/slow?delay=2"   # concorrente (least_connections)
-"""
 import argparse
 import json
 import time
@@ -34,7 +24,7 @@ def hit(i: int) -> str:
             code = r.status
     except urllib.error.HTTPError as e:
         who, code = f"ERRO-{e.code}", e.code
-    except Exception as e:  # conexão recusada, timeout...
+    except Exception as e: 
         who, code = f"ERRO-{type(e).__name__}", 0
     if not args.quiet:
         print(f"#{i:04d} -> {who} ({code})", flush=True)
