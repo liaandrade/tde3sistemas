@@ -1,0 +1,36 @@
+# Sobe 3 instâncias idênticas da ShopNow + o Load Balancer:  docker compose up --build
+
+x-app: &app-base
+  build: ./app
+  restart: "no"          # se for derrubada, FICA derrubada (para o teste de failover)
+
+services:
+  app1:
+    <<: *app-base
+    container_name: shopnow-app1
+    environment: { INSTANCE_ID: app1 }
+    ports: ["5001:5000"]   # acesso direto (apenas para testes/admin)
+
+  app2:
+    <<: *app-base
+    container_name: shopnow-app2
+    environment: { INSTANCE_ID: app2 }
+    ports: ["5002:5000"]
+
+  app3:
+    <<: *app-base
+    container_name: shopnow-app3
+    environment: { INSTANCE_ID: app3 }
+    ports: ["5003:5000"]
+
+  lb:
+    build: ./lb
+    container_name: shopnow-lb
+    environment:
+      BACKENDS: "app1:5000,app2:5000,app3:5000"
+      ALGORITHM: "${ALGORITHM:-round_robin}"   # ex.: ALGORITHM=least_connections docker compose up
+      HEALTH_INTERVAL: "2"
+      FALL_THRESHOLD: "2"
+      RISE_THRESHOLD: "2"
+    ports: ["8080:8080"]   # ÚNICO ponto de entrada dos clientes
+    depends_on: [app1, app2, app3]
